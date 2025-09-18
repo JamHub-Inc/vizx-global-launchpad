@@ -57,8 +57,8 @@ const TechnologySection = () => {
   ];
 
   return (
-    <section id="technology" className="py-20 bg-gradient-section">
-      <div className="container mx-auto px-4 lg:px-6">
+    <section id="technology" className="bg-gradient-section py-6 md:py-12">
+      <div className="container mx-auto px-4 lg:px-6 overflow-hidden">
         {/* Section Header */}
         <div className="text-center mb-16">
           <h2 className="text-3xl md:text-5xl font-bold text-foreground mb-6">
@@ -72,11 +72,11 @@ const TechnologySection = () => {
 
         {/* Technology Overview */}
         <div className="grid lg:grid-cols-2 gap-12 mb-20 items-center">
-          <div className="animate-fade-in">
+          <div className="animate-fade-in overflow-hidden rounded-2xl">
             <img
               src={bpoServicesImage}
               alt="Modern BPO technology environment"
-              className="rounded-2xl shadow-strong w-full h-auto"
+              className="rounded-2xl shadow-strong w-full h-auto object-cover"
             />
           </div>
           
@@ -113,7 +113,10 @@ const TechnologySection = () => {
         {/* Features Grid */}
         <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
           {features.map((feature, index) => (
-            <Card key={index} className="p-6 shadow-medium hover:shadow-strong transition-smooth animate-fade-in group">
+            <Card 
+              key={index} 
+              className="p-6 shadow-medium hover:shadow-strong transition-smooth animate-fade-in group overflow-hidden"
+            >
               <div className="w-12 h-12 bg-accent/10 rounded-xl flex items-center justify-center mb-4 group-hover:scale-110 transition-transform">
                 <feature.icon className="w-6 h-6 text-accent" />
               </div>
@@ -128,7 +131,7 @@ const TechnologySection = () => {
         </div>
 
         {/* Integration Showcase */}
-        <div className="mt-20 bg-white rounded-2xl p-8 md:p-12 shadow-strong">
+        <div className="mt-20 rounded-2xl p-8 md:p-12 shadow-strong relative overflow-hidden">
           <div className="text-center mb-12">
             <h3 className="text-2xl md:text-3xl font-bold text-primary mb-4">
               Seamless Integration Process
@@ -138,21 +141,23 @@ const TechnologySection = () => {
             </p>
           </div>
 
-          <div className="grid md:grid-cols-4 gap-8">
+          <div className="grid md:grid-cols-4 gap-8 relative">
             {[
               { step: "01", title: "Assessment", description: "Analyze your current processes" },
               { step: "02", title: "Strategy", description: "Design customized solution" },
               { step: "03", title: "Implementation", description: "Deploy HI + AI systems" },
               { step: "04", title: "Optimization", description: "Continuous improvement" }
             ].map((phase, index) => (
-              <div key={index} className="text-center">
+              <div key={index} className="text-center relative">
                 <div className="w-16 h-16 bg-accent text-accent-foreground rounded-full flex items-center justify-center mx-auto mb-4 font-bold text-xl">
                   {phase.step}
                 </div>
                 <h4 className="font-semibold text-primary mb-2">{phase.title}</h4>
                 <p className="text-muted-foreground text-sm">{phase.description}</p>
+
+                {/* Connector line fixed to avoid overflow */}
                 {index < 3 && (
-                  <div className="hidden md:block absolute top-8 left-16 w-full h-0.5 bg-accent/30"></div>
+                  <div className="hidden md:block absolute top-8 right-[-50%] w-[100%] h-0.5 bg-accent/30"></div>
                 )}
               </div>
             ))}

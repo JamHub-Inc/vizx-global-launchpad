@@ -17,14 +17,14 @@ const ImpactSection = () => {
       icon: Heart,
       title: "Vizx Community Fund",
       description: "Supporting local communities through education, healthcare, and infrastructure development.",
-      impact: "500+ families supported",
+      impact: "1+ partnership with native university",
       color: "bg-red-500/10 text-red-600"
     },
     {
       icon: GraduationCap,
       title: "Skills Development Program",
       description: "Providing training and upskilling opportunities for local talent to build sustainable careers.",
-      impact: "2,000+ professionals trained",
+      impact: "100+ professionals trained",
       color: "bg-blue-500/10 text-blue-600"
     },
     {
@@ -38,7 +38,7 @@ const ImpactSection = () => {
       icon: Globe,
       title: "Global Partnerships",
       description: "Collaborating with international organizations to create opportunities and knowledge exchange.",
-      impact: "50+ global partnerships",
+      impact: "8+ global partnerships",
       color: "bg-purple-500/10 text-purple-600"
     }
   ];
@@ -47,20 +47,20 @@ const ImpactSection = () => {
     {
       quote: "Vizx Global didn't just help us streamline our operations—they became a true partner in our growth journey. Their commitment to excellence is evident in every interaction.",
       author: "Jennifer Williams",
-      role: "CEO, TechFlow Solutions",
+      role: "Partner, Bryant Staffing Solution",
       company: "United States"
     },
     {
       quote: "The cultural fit and understanding of our business needs was exceptional. Vizx Global's team feels like an extension of our own organization.",
       author: "David Thompson",
-      role: "Operations Director, MedCare Plus", 
+      role: "Operations Director, Around the Clock", 
       company: "Canada"
     },
     {
       quote: "What sets Vizx Global apart is their genuine care for social impact. They're not just delivering services—they're making a difference in communities.",
       author: "Maria Santos",
-      role: "Founder, Impact Healthcare",
-      company: "Brazil"
+      role: "Founder, Vame",
+      company: "USA"
     }
   ];
 
@@ -136,12 +136,12 @@ const ImpactSection = () => {
         </div>
 
         {/* Awards & Recognition */}
-        <div className="bg-primary text-white rounded-2xl p-8 md:p-12 text-center">
+        <div className="bg-background/95 border rounded-2xl p-8 md:p-12 text-center">
           <Award className="w-16 h-16 text-accent mx-auto mb-6" />
           <h3 className="text-2xl md:text-3xl font-bold mb-4">
             Recognized Excellence
           </h3>
-          <p className="text-white/90 text-lg mb-8 max-w-2xl mx-auto">
+          <p className="text-lg mb-8 max-w-2xl mx-auto">
             Our commitment to quality and social responsibility has earned recognition 
             from industry leaders and international organizations.
           </p>
@@ -149,19 +149,19 @@ const ImpactSection = () => {
           <div className="grid grid-cols-2 md:grid-cols-4 gap-6 mb-8">
             <div>
               <div className="text-2xl font-bold text-accent mb-1">ISO 27001</div>
-              <div className="text-white/80 text-sm">Security Certified</div>
+              <div className="text-sm">Security Certified</div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-accent mb-1">Best BPO</div>
-              <div className="text-white/80 text-sm">East Africa 2023</div>
+              <div className="text-2xl font-bold text-accent mb-1">One of the Best BPO </div>
+              <div className="text-sm">East Africa </div>
             </div>
             <div>
-              <div className="text-2xl font-bold text-accent mb-1">Top Employer</div>
-              <div className="text-white/80 text-sm">Kenya 2023</div>
+              <div className="text-2xl font-bold text-accent mb-1">Top-notch Employer</div>
+              <div className="text-sm">Kenya</div>
             </div>
             <div>
               <div className="text-2xl font-bold text-accent mb-1">5-Star</div>
-              <div className="text-white/80 text-sm">Client Rating</div>
+              <div className="text-sm">Client Rating</div>
             </div>
           </div>
 

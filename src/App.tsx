@@ -6,6 +6,11 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import { ThemeProvider } from "@/components/ThemeProvider";
 import Index from "./pages/Index";
 import NotFound from "./pages/NotFound";
+import RecruitmentProcess from "./pages/RecruitmentProcess";
+import RealEstateSolutions from "./pages/RealEstateSolutions";
+import { ChatProvider } from "@/components/chatContext";
+import ChatButton from "@/components/chatButton";
+import ChatbotWindow from "@/components/chatWindowComponent";
 
 const queryClient = new QueryClient();
 
@@ -16,11 +21,18 @@ const App = () => (
         <Toaster />
         <Sonner />
         <BrowserRouter>
-          <Routes>
-            <Route path="/" element={<Index />} />
-            {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
-            <Route path="*" element={<NotFound />} />
-          </Routes>
+          <ChatProvider>
+            <Routes>
+              <Route path="/" element={<Index />} />
+              <Route path="rp" element={<RecruitmentProcess />} />
+              <Route path="real-estate" element={<RealEstateSolutions />} />
+              {/* ADD ALL CUSTOM ROUTES ABOVE THE CATCH-ALL "*" ROUTE */}
+              <Route path="*" element={<NotFound />} />
+            </Routes>
+            {/* Chat components should be outside <Routes>, but inside <ChatProvider> */}
+            <ChatButton />
+            <ChatbotWindow />
+          </ChatProvider>
         </BrowserRouter>
       </TooltipProvider>
     </ThemeProvider>

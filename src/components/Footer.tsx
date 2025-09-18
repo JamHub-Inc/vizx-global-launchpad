@@ -40,22 +40,22 @@ const Footer = () => {
   };
 
   const socialLinks = [
-    { icon: Linkedin, href: "#", label: "LinkedIn" },
-    { icon: Twitter, href: "#", label: "Twitter" },
-    { icon: Facebook, href: "#", label: "Facebook" },
-    { icon: Instagram, href: "#", label: "Instagram" }
+    { icon: Linkedin, href: "https://ke.linkedin.com/company/vizx-international", label: "LinkedIn" },
+    { icon: Twitter, href: "https://twitter.com/VIZXKe/", label: "Twitter" },
+    { icon: Facebook, href: "https://www.facebook.com/VIZXInternational/", label: "Facebook" },
+    { icon: Instagram, href: "https://www.instagram.com/vizxinternational/?hl=en", label: "Instagram" }
   ];
 
   return (
-    <footer className="bg-primary text-white">
+    <footer className="bg-background">
       {/* CTA Section */}
-      <div className="border-b border-white/10">
+      <div className="border-b border-border">
         <div className="container mx-auto px-4 lg:px-6 py-16">
           <div className="text-center">
-            <h3 className="text-3xl md:text-4xl font-bold mb-4">
+            <h3 className="text-3xl md:text-4xl font-bold mb-4 text-foreground">
               Ready to Transform Your Business?
             </h3>
-            <p className="text-white/90 text-lg mb-8 max-w-2xl mx-auto">
+            <p className="text-muted-foreground text-lg mb-8 max-w-2xl mx-auto">
               Join hundreds of companies that trust Vizx Global for their BPO and RPO needs. 
               Let's discuss how we can help you scale efficiently.
             </p>
@@ -64,7 +64,7 @@ const Footer = () => {
                 Start Your Journey Today
                 <ArrowRight className="ml-2 group-hover:translate-x-1 transition-transform" />
               </Button>
-              <Button variant="outline-light" size="lg">
+              <Button variant="outline" size="lg">
                 Schedule a Call
               </Button>
             </div>
@@ -78,8 +78,8 @@ const Footer = () => {
           {/* Company Info */}
           <div className="lg:col-span-2">
             <div className="mb-6">
-              <h4 className="text-2xl font-bold mb-4">Vizx Global</h4>
-              <p className="text-white/80 leading-relaxed">
+              <h4 className="text-2xl font-bold mb-4 text-foreground">Vizx Global</h4>
+              <p className="text-muted-foreground leading-relaxed">
                 Empowering businesses worldwide with tailored BPO and RPO solutions. 
                 We combine human intelligence with AI to deliver exceptional results.
               </p>
@@ -89,21 +89,21 @@ const Footer = () => {
             <div className="space-y-4">
               <div className="flex items-center">
                 <MapPin className="w-5 h-5 text-accent mr-3 flex-shrink-0" />
-                <span className="text-white/80 text-sm">
+                <span className="text-muted-foreground text-sm">
                   Nairobi, Kenya | Global Operations
                 </span>
               </div>
               <div className="flex items-center">
                 <Phone className="w-5 h-5 text-accent mr-3 flex-shrink-0" />
-                <span className="text-white/80 text-sm">+254 (0) 700 123 456</span>
+                <span className="text-muted-foreground text-sm">+254 (0) 700 123 456</span>
               </div>
               <div className="flex items-center">
                 <Mail className="w-5 h-5 text-accent mr-3 flex-shrink-0" />
-                <span className="text-white/80 text-sm">hello@vizxglobal.com</span>
+                <span className="text-muted-foreground text-sm">hello@vizxglobal.com</span>
               </div>
               <div className="flex items-center">
                 <Globe className="w-5 h-5 text-accent mr-3 flex-shrink-0" />
-                <span className="text-white/80 text-sm">Available 24/7 Globally</span>
+                <span className="text-muted-foreground text-sm">Available 24/7 Globally</span>
               </div>
             </div>
 
@@ -113,10 +113,10 @@ const Footer = () => {
                 <a
                   key={index}
                   href={social.href}
-                  className="w-10 h-10 bg-white/10 rounded-lg flex items-center justify-center hover:bg-accent hover:scale-110 transition-all"
+                  className="w-10 h-10 bg-muted rounded-lg flex items-center justify-center hover:bg-accent hover:scale-110 transition-all"
                   aria-label={social.label}
                 >
-                  <social.icon className="w-5 h-5" />
+                  <social.icon className="w-5 h-5 text-foreground" />
                 </a>
               ))}
             </div>
@@ -124,13 +124,13 @@ const Footer = () => {
 
           {/* Services */}
           <div>
-            <h5 className="font-semibold text-lg mb-4">Services</h5>
+            <h5 className="font-semibold text-lg mb-4 text-orange-500">Services</h5>
             <ul className="space-y-3">
               {footerLinks.services.map((link, index) => (
                 <li key={index}>
                   <a
                     href={link.href}
-                    className="text-white/80 hover:text-accent transition-colors text-sm"
+                    className="text-muted-foreground hover:text-accent transition-colors text-sm"
                   >
                     {link.name}
                   </a>
@@ -141,13 +141,13 @@ const Footer = () => {
 
           {/* Industries */}
           <div>
-            <h5 className="font-semibold text-lg mb-4">Industries</h5>
+            <h5 className="font-semibold text-lg mb-4 text-orange-500">Industries</h5>
             <ul className="space-y-3">
               {footerLinks.industries.map((link, index) => (
                 <li key={index}>
                   <a
                     href={link.href}
-                    className="text-white/80 hover:text-accent transition-colors text-sm"
+                    className="text-muted-foreground hover:text-accent transition-colors text-sm"
                   >
                     {link.name}
                   </a>
@@ -158,13 +158,13 @@ const Footer = () => {
 
           {/* Company */}
           <div>
-            <h5 className="font-semibold text-lg mb-4">Company</h5>
+            <h5 className="font-semibold text-lg mb-4 text-orange-500">Company</h5>
             <ul className="space-y-3">
               {footerLinks.company.map((link, index) => (
                 <li key={index}>
                   <a
                     href={link.href}
-                    className="text-white/80 hover:text-accent transition-colors text-sm"
+                    className="text-muted-foreground hover:text-accent transition-colors text-sm"
                   >
                     {link.name}
                   </a>
@@ -175,13 +175,13 @@ const Footer = () => {
 
           {/* Support */}
           <div>
-            <h5 className="font-semibold text-lg mb-4">Support</h5>
+            <h5 className="font-semibold text-lg mb-4 text-orange-500">Support</h5>
             <ul className="space-y-3">
               {footerLinks.support.map((link, index) => (
                 <li key={index}>
                   <a
                     href={link.href}
-                    className="text-white/80 hover:text-accent transition-colors text-sm"
+                    className="text-muted-foreground hover:text-accent transition-colors text-sm"
                   >
                     {link.name}
                   </a>
@@ -193,20 +193,20 @@ const Footer = () => {
       </div>
 
       {/* Bottom Bar */}
-      <div className="border-t border-white/10">
+      <div className="border-t border-border">
         <div className="container mx-auto px-4 lg:px-6 py-6">
           <div className="flex flex-col md:flex-row justify-between items-center">
-            <div className="text-white/80 text-sm mb-4 md:mb-0">
-              © 2024 Vizx Global. All rights reserved.
+            <div className="text-muted-foreground text-sm mb-4 md:mb-0">
+              © 2025 Vizx Global. All rights reserved.
             </div>
             <div className="flex space-x-6 text-sm">
-              <a href="#" className="text-white/80 hover:text-accent transition-colors">
+              <a href="#" className="text-muted-foreground hover:text-accent transition-colors">
                 Privacy Policy
               </a>
-              <a href="#" className="text-white/80 hover:text-accent transition-colors">
+              <a href="#" className="text-muted-foreground hover:text-accent transition-colors">
                 Terms of Service
               </a>
-              <a href="#" className="text-white/80 hover:text-accent transition-colors">
+              <a href="#" className="text-muted-foreground hover:text-accent transition-colors">
                 Cookie Policy
               </a>
             </div>

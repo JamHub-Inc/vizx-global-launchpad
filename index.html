@@ -3,23 +3,73 @@
   <head>
     <meta charset="UTF-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Vizx Global - Premier BPO & RPO Solutions | Empowering Business Growth</title>
-    <meta name="description" content="Transform your business with Vizx Global's tailored BPO and RPO solutions. Streamline operations, enhance recruitment, and scale efficiently with our VIZX HI + AI technology." />
+    <title>
+      Vizx Global - Premier BPO & RPO Solutions | Empowering Business Growth
+    </title>
+    <meta
+      name="description"
+      content="Transform your business with Vizx Global's tailored BPO and RPO solutions. Streamline operations, enhance recruitment, and scale efficiently with our VIZX HI + AI technology."
+    />
     <meta name="author" content="Vizx Global" />
-    <meta name="keywords" content="BPO, RPO, business process outsourcing, recruitment process outsourcing, Kenya, global, AI, human intelligence" />
+    <meta
+      name="keywords"
+      content="BPO, RPO, business process outsourcing, recruitment process outsourcing, Kenya, global, AI, human intelligence"
+    />
 
-    <meta property="og:title" content="Vizx Global - Premier BPO & RPO Solutions" />
-    <meta property="og:description" content="Transform your business with Vizx Global's tailored BPO and RPO solutions. Streamline operations and scale efficiently with our VIZX HI + AI technology." />
+    <meta
+      property="og:title"
+      content="Vizx Global - Premier BPO & RPO Solutions"
+    />
+    <meta
+      property="og:description"
+      content="Transform your business with Vizx Global's tailored BPO and RPO solutions. Streamline operations and scale efficiently with our VIZX HI + AI technology."
+    />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta
+      property="og:image"
+      content="https://res.cloudinary.com/dtrad03yv/image/upload/v1758063140/Company_Logo-removebg-preview_pxi3mn.png"
+    />
 
     <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:site" content="@lovable_dev" />
-    <meta name="twitter:image" content="https://lovable.dev/opengraph-image-p98pqg.png" />
+    <meta name="twitter:site" content="@vizx" />
+    <meta
+      name="twitter:image"
+      content="https://res.cloudinary.com/dtrad03yv/image/upload/v1758063140/Company_Logo-removebg-preview_pxi3mn.png"
+    />
+
+    <!-- Force-hide Zoho’s launcher with CSS -->
+    <style>
+      #zsiq_float,
+      #zsiqbtn {
+        display: none !important;
+      }
+    </style>
   </head>
 
   <body>
     <div id="root"></div>
     <script type="module" src="/src/main.tsx"></script>
+
+    <!-- Zoho SalesIQ Live Chat -->
+    <script>
+      window.$zoho = window.$zoho || {};
+      $zoho.salesiq = $zoho.salesiq || { ready: function () {} };
+
+      // Hide Zoho's default floating button since we use our own ChatButton
+      $zoho.salesiq.ready = function () {
+        try {
+          if ($zoho.salesiq.floatbutton) {
+            $zoho.salesiq.floatbutton.visible("hide");
+          }
+        } catch (e) {
+          console.warn("Zoho SalesIQ floatbutton not available yet", e);
+        }
+      };
+    </script>
+    <script
+      id="zsiqscript"
+      src="https://salesiq.zohopublic.com/widget?wc=siqa8a5255d8765f1119922dd1318352c69"
+      defer
+    ></script>
   </body>
 </html>

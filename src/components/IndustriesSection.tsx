@@ -1,5 +1,6 @@
 import { Card } from "@/components/ui/card";
 import { Button } from "@/components/ui/button";
+import { motion } from "framer-motion";
 import { 
   HeartHandshake, 
   Building, 
@@ -20,18 +21,18 @@ const IndustriesSection = () => {
       testimonial: {
         quote: "Vizx Global helped us reduce processing time by 60% while maintaining 100% HIPAA compliance.",
         author: "Dr. Sarah Johnson",
-        company: "MediCore Health Systems"
+        company: "Around the Clock"
       }
     },
     {
       icon: Building,
-      title: "Real Estate & Property Management",
+      title: "Real Estate",
       description: "Comprehensive property management solutions including tenant screening, lease processing, and market analysis.",
       features: ["Tenant Screening", "Lease Processing", "Market Analysis", "Property Marketing"],
       testimonial: {
         quote: "Their RPO services helped us find qualified property managers 3x faster than traditional methods.",
         author: "Michael Chen",
-        company: "PropMax Realty"
+        company: "Bryant Staffing Solutions"
       }
     },
     {
@@ -42,13 +43,13 @@ const IndustriesSection = () => {
       testimonial: {
         quote: "Vizx Global's solutions allowed us to focus more on our mission while they handled our operational needs.",
         author: "Amanda Rodriguez",
-        company: "Global Impact Foundation"
+        company: "Welltech Partners"
       }
     }
   ];
 
   return (
-    <section id="industries" className="py-20 bg-background">
+    <section id="industries" className="py-6 bg-background">
       <div className="container mx-auto px-4 lg:px-6">
         {/* Section Header */}
         <div className="text-center mb-16">
@@ -115,50 +116,49 @@ const IndustriesSection = () => {
         </div>
 
         {/* Stats Section */}
-        <div className="bg-primary text-white rounded-2xl p-8 md:p-12">
-          <div className="text-center mb-12">
-            <h3 className="text-2xl md:text-3xl font-bold mb-4">
-              Trusted Across Industries
-            </h3>
-            <p className="text-white/90 text-lg">
-              Our proven track record speaks for itself
-            </p>
-          </div>
-          
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-8">
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Users className="w-6 h-6 text-accent mr-2" />
-              </div>
-              <div className="text-2xl md:text-3xl font-bold text-accent mb-1">150+</div>
-              <div className="text-white/80 text-sm">Healthcare Clients</div>
-            </div>
-            
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Building className="w-6 h-6 text-accent mr-2" />
-              </div>
-              <div className="text-2xl md:text-3xl font-bold text-accent mb-1">200+</div>
-              <div className="text-white/80 text-sm">Real Estate Partners</div>
-            </div>
-            
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-2">
-                <TrendingUp className="w-6 h-6 text-accent mr-2" />
-              </div>
-              <div className="text-2xl md:text-3xl font-bold text-accent mb-1">85%</div>
-              <div className="text-white/80 text-sm">Efficiency Improvement</div>
-            </div>
-            
-            <div className="text-center">
-              <div className="flex items-center justify-center mb-2">
-                <Globe className="w-6 h-6 text-accent mr-2" />
-              </div>
-              <div className="text-2xl md:text-3xl font-bold text-accent mb-1">45+</div>
-              <div className="text-white/80 text-sm">Countries Served</div>
-            </div>
-          </div>
+      <div className="relative w-full overflow-hidden p-6 md:p-8 ">
+        <div className="text-center mb-8">
+             <h3 className="text-2xl md:text-4xl font-bold text-foreground mb-6">
+            Trusted accross <span className="text-accent">industries</span>
+          </h3> 
+    <motion.div
+      className="flex gap-16 items-center mb-6"
+      animate={{ x: ["0%", "-50%"] }}
+      transition={{ repeat: Infinity, duration: 20, ease: "linear" }}
+    >
+      {[
+        { name: "Around the Clock", logo: "https://res.cloudinary.com/dtrad03yv/image/upload/v1758066586/Client3_hbge3y.png" },
+        { name: "Bryant Staffing Solutions", logo: "https://res.cloudinary.com/dtrad03yv/image/upload/v1758066533/Client5_gpjviu.png" },
+        { name: "Vame", logo: "https://res.cloudinary.com/dtrad03yv/image/upload/v1758066165/Vame_v82qhw.png" },
+        { name: "LIVEWELL", logo: "https://res.cloudinary.com/dtrad03yv/image/upload/v1758066291/LIVEWELL_ucykvu.png" },
+        { name: "C2C Pro Team", logo: "https://res.cloudinary.com/dtrad03yv/image/upload/v1758066454/Client4_n4x2lk.png" },
+        { name: "WellTech Partners", logo: "https://res.cloudinary.com/dtrad03yv/image/upload/v1758066406/Bryant_dji1xm.webp" },
+  
+        { name: "Around the Clock", logo: "https://res.cloudinary.com/dtrad03yv/image/upload/v1758066586/Client3_hbge3y.png" },
+        { name: "Bryant Staffing Solutions", logo: "https://res.cloudinary.com/dtrad03yv/image/upload/v1758066533/Client5_gpjviu.png" },
+        { name: "Vame", logo: "https://res.cloudinary.com/dtrad03yv/image/upload/v1758066165/Vame_v82qhw.png" },
+        { name: "LIVEWELL", logo: "https://res.cloudinary.com/dtrad03yv/image/upload/v1758066291/LIVEWELL_ucykvu.png" },
+        { name: "C2C Pro Team", logo: "https://res.cloudinary.com/dtrad03yv/image/upload/v1758066454/Client4_n4x2lk.png" },
+        { name: "Welltech Partners", logo: "https://res.cloudinary.com/dtrad03yv/image/upload/v1758066406/Bryant_dji1xm.webp" },
+      ].map((client, idx) => (
+        <div
+          key={idx}
+          className="flex flex-col items-center justify-center min-w-[160px]"
+        >
+          <img
+            src={client.logo}
+            alt={client.name}
+            className="h-16 md:h-20 object-contain transition duration-300"
+          />
+          <span className="text-gray-700 dark:text-gray-300 mt-2 text-sm md:text-base font-medium text-center">
+            {client.name}
+          </span>
         </div>
+      ))}
+    </motion.div>
+    </div>
+  </div>
+        
       </div>
     </section>
   );

@@ -13,10 +13,10 @@ All colors MUST be HSL for consistent theming.
     --foreground: 222 84% 4.9%;
 
     /* Professional blue palette */
-    --primary: 220 91% 25%;
-    --primary-foreground: 0 0% 98%;
-    --primary-light: 220 91% 45%;
-    --primary-dark: 220 91% 15%;
+  --primary: 220 40% 28%;           
+  --primary-foreground: 0 0% 100%;  
+  --primary-light: 220 40% 40%;      
+  --primary-dark: 220 40% 18%; 
 
     /* Orange accent for CTAs */
     --accent: 25 95% 53%;
@@ -78,10 +78,10 @@ All colors MUST be HSL for consistent theming.
     --foreground: 210 40% 98%;
     --card: 222 84% 4.9%;
     --card-foreground: 210 40% 98%;
-    --primary: 220 91% 45%;
-    --primary-foreground: 0 0% 98%;
-    --primary-light: 220 91% 65%;
-    --primary-dark: 220 91% 25%;
+    --primary: 220 40% 45%;             /* Brighter for contrast in dark mode */
+    --primary-foreground: 0 0% 100%;
+    --primary-light: 220 40% 60%;
+    --primary-dark: 220 40% 30%;
     --accent: 25 95% 58%;
     --accent-foreground: 0 0% 98%;
     --accent-hover: 25 95% 53%;
