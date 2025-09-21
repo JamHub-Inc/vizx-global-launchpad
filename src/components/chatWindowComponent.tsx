@@ -469,13 +469,13 @@ const ChatbotWindow: React.FC = () => {
             <>
               <HiUserGroup size={18} /> 
               <span className={isMobile ? "hidden sm:inline" : ""}>Talk to a Real Agent</span>
-              <span className={isMobile ? "sm:hidden" : "hidden"}>Agent</span>
+              <span className={isMobile ? "sm:hidden" : "hidden"}>Vizx Agent</span>
             </>
           ) : (
             <>
               <BsRobot size={16} /> 
               <span className={isMobile ? "hidden sm:inline" : ""}>Back to AI Assistant</span>
-              <span className={isMobile ? "sm:hidden" : "hidden"}>AI</span>
+              <span className={isMobile ? "sm:hidden" : "hidden"}>Vizx AI <Assi></Assi>stant</span>
             </>
           )}
         </button>
