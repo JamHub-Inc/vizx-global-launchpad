@@ -1,5 +1,5 @@
 import { Bot } from "lucide-react";
-import { useChat } from "@/components/chatContext";
+import { useChat } from "@/components/ChatContext";
 
 const ChatButton: React.FC = () => {
   const { toggleChat } = useChat();
