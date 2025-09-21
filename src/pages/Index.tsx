@@ -22,7 +22,7 @@ const Index = () => {
         <TechnologySection />
         <ImpactSection />
       </main>
-           <ChatButton />
+        <ChatButton />
       <Footer />
     </div>
   );

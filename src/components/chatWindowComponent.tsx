@@ -34,14 +34,60 @@ type ChatMessage = {
 
 const systemMessage = {
   role: "system",
-  content: `
-    You are Vizx Global's AI Assistant.
-    - Always answer as a representative of Vizx Global.
-    - Vizx Global is a BPO and RPO company headquartered in Kenya with US partnerships.
-    - We specialize in technology, finance, real estate, healthcare, and outsourcing.
-    - We provide cost-effective recruitment, customer support, and digital workflow automation.
-    - Speak in a professional, clear, supportive tone.
-  `,
+content: `
+  You are Vizx Global's AI Assistant.
+  - Always answer as a representative of Vizx Global Solutions.
+  - Vizx Global is a premier BPO (Business Process Outsourcing) and RPO (Recruitment Process Outsourcing) company.
+  - Headquartered in Nairobi, Kenya, with a strategic office in Los Angeles, California.
+  - Established in 2017 as Vizx International; rebranded as Vizx Global Solutions.
+  - Began with 100+ seats serving U.S. clients; now 400+ seats at Britam Towers, scalable to 600+.
+  - Our leadership brings over 25 years of experience in outsourcing, healthcare staffing, and offshore workforce solutions.
+  - CEO: John Mamboleo, an entrepreneur with U.S. healthcare staffing background.
+  - Owner-driven model: leadership is hands-on with daily operations and client relations.
+  - Core philosophy: "Vision Execution (VIZX)" — turning ideas into measurable outcomes.
+  - Specializations include:
+    • Recruitment Process Outsourcing (RPO)
+    • Back-office and administrative support
+    • Customer Experience (CX) and call center support
+    • Digital workflow automation
+    • Finance and accounting services
+    • Data services and analytics
+    • Sales enablement and lead generation
+    • Healthcare staffing and outsourcing
+    • Real estate business support
+    • Digital marketing and brand outreach
+  - Vizx Global champions Kenya as a premier outsourcing hub.
+  - Kenya advantages: 83% literacy, 75%+ with high school/college education, stable internet, strong infrastructure.
+  - Clients are mainly U.S.-based with combined revenues over $1B.
+  - Our services reduce overhead, improve efficiency, and allow clients to focus on their core operations.
+  - Vizx Global builds jobs for African youth and professionals, advancing equity and opportunity.
+  - We emphasize scalability, rapid ramp-up, and multilingual support for global markets.
+  - We operate transparently, guided by ethics: fair wages, inclusivity, equity, and transparency.
+  - Vizx Global is independent from Vizx Corporate (vizxcorp.com).
+  - Vizx Corporate is led by Dorika Mamboleo Beckett, focused on incubation and venture building.
+  - Relationship with Vizx Corporate: shared "Vision Execution" philosophy and familial leadership link, not a parent-subsidiary structure.
+  - Vizx Global is NOT affiliated with VXI Global Solutions (vxi.com).
+  - VXI was founded in 1998, acquired by Bain Capital in 2022, with a separate leadership team.
+  - Negative VXI reviews and financials do not apply to Vizx Global.
+  - Vizx Global’s reputation is positive, with strong client testimonials highlighting efficiency and cost savings.
+  - Differentiation: African cost efficiency + Western service quality.
+  - Partnerships with U.S. firms strengthen credibility and trust.
+  - Vizx Global uses AI, automation, and cloud tools for digital transformation.
+  - Clients span industries: technology, finance, healthcare, and real estate.
+  - Vision: transform outsourcing through innovation, efficiency, and global talent.
+  - Mission: deliver scalable, affordable, and high-quality outsourcing solutions.
+  - Value proposition: mobilizing Africa’s educated workforce to serve global businesses.
+  - Service delivery blends human expertise with digital automation for maximum impact.
+  - Competitive edge: agile scaling, owner-driven model, and direct leadership oversight.
+  - Training and development programs prepare Kenyan graduates for global careers.
+  - We foster long-term client partnerships instead of one-time transactions.
+  - Commitment to job creation and socio-economic growth in Kenya and Africa.
+  - Positioning: pioneer of African outsourcing industry, helping shift global perceptions.
+  - Shared entrepreneurial legacy of Dorika and John Mamboleo reinforces brand credibility.
+  - Vizx Global nurtures innovation and entrepreneurship within its ecosystem.
+  - Future plans: expand seat capacity, add regional African centers, strengthen U.S. footprint.
+  - Speak in a professional, clear, and supportive tone, positioning Vizx Global as a trusted, innovative outsourcing partner.
+`
 };
 
 const ChatbotWindow: React.FC = () => {
@@ -58,9 +104,25 @@ const ChatbotWindow: React.FC = () => {
   const [isTyping, setIsTyping] = useState<boolean>(false);
   const [mode, setMode] = useState<"ai" | "agent">("ai");
   const [isZohoReady, setIsZohoReady] = useState<boolean>(false);
+  const [isMobile, setIsMobile] = useState<boolean>(false);
   const location = useLocation();
   const { originalTweet } = (location.state as { originalTweet?: string }) || {};
   const zohoCheckInterval = useRef<NodeJS.Timeout | null>(null);
+  const chatContainerRef = useRef<HTMLDivElement>(null);
+
+  // Check if device is mobile
+  useEffect(() => {
+    const checkMobile = () => {
+      setIsMobile(window.innerWidth < 768);
+    };
+
+    checkMobile();
+    window.addEventListener('resize', checkMobile);
+
+    return () => {
+      window.removeEventListener('resize', checkMobile);
+    };
+  }, []);
 
   // Enhanced Zoho readiness check
   useEffect(() => {
@@ -190,31 +252,24 @@ const ChatbotWindow: React.FC = () => {
         if (zoho.salesiq.visitor.chatmessage && typeof zoho.salesiq.visitor.chatmessage === 'function') {
           zoho.salesiq.visitor.chatmessage(text);
           messageSent = true;
-          // console.log("Message sent via visitor.chatmessage");
         }
         // Method 2: offlineMessage (for when agents are offline)
         else if (zoho.salesiq.visitor.offlineMessage && typeof zoho.salesiq.visitor.offlineMessage === 'function') {
           zoho.salesiq.visitor.offlineMessage(text);
           messageSent = true;
-          // console.log("Message sent via visitor.offlineMessage");
         }
         // Method 3: Try to start a chat and then send message
         else if (zoho.salesiq.visitor.chat && typeof zoho.salesiq.visitor.chat === 'function') {
-          // This might be for initiating a chat session
           zoho.salesiq.visitor.chat(text);
           messageSent = true;
-          // console.log("Chat initiated via visitor.chat");
         }
         // Method 4: Use the chat object's methods
         else if (zoho.salesiq.chat && zoho.salesiq.chat.start && typeof zoho.salesiq.chat.start === 'function') {
-          // Start a chat session first
           zoho.salesiq.chat.start();
-          // Then try to send message if there's a send method
           if (zoho.salesiq.visitor.chatmessage && typeof zoho.salesiq.visitor.chatmessage === 'function') {
             zoho.salesiq.visitor.chatmessage(text);
           }
           messageSent = true;
-          // console.log("Chat started and message sent");
         }
       }
 
@@ -230,7 +285,6 @@ const ChatbotWindow: React.FC = () => {
           }
         ]);
         
-        // Try to ensure the chat window is open
         openZohoChatWindow();
       } else {
         throw new Error("Could not send message to Zoho agent");
@@ -254,15 +308,11 @@ const ChatbotWindow: React.FC = () => {
     try {
       const zoho = window.$zoho || window.ZOHO;
       if (zoho && zoho.salesiq) {
-        // Try to open the chat window
         if (zoho.salesiq.chatwindow && zoho.salesiq.chatwindow.open && typeof zoho.salesiq.chatwindow.open === 'function') {
           zoho.salesiq.chatwindow.open();
-          // console.log("Zoho chat window opened");
         }
-        // Alternative method to show chat window
         else if (zoho.salesiq.floatwindow && zoho.salesiq.floatwindow.show && typeof zoho.salesiq.floatwindow.show === 'function') {
           zoho.salesiq.floatwindow.show();
-          // console.log("Zoho float window shown");
         }
       }
     } catch (error) {
@@ -274,15 +324,11 @@ const ChatbotWindow: React.FC = () => {
     try {
       const zoho = window.$zoho || window.ZOHO;
       if (zoho && zoho.salesiq) {
-        // Try to start a chat session
         if (zoho.salesiq.chat && zoho.salesiq.chat.start && typeof zoho.salesiq.chat.start === 'function') {
           zoho.salesiq.chat.start();
-          // console.log("Zoho chat session started");
         }
-        // Alternative method using visitor.chat
         else if (zoho.salesiq.visitor && zoho.salesiq.visitor.chat && typeof zoho.salesiq.visitor.chat === 'function') {
           zoho.salesiq.visitor.chat();
-          // console.log("Zoho visitor chat initiated");
         }
       }
     } catch (error) {
@@ -373,7 +419,6 @@ const ChatbotWindow: React.FC = () => {
         },
       ]);
       
-      // Try to start a chat with agent if Zoho is ready
       if (isZohoReady) {
         startZohoChat();
         openZohoChatWindow();
@@ -396,12 +441,22 @@ const ChatbotWindow: React.FC = () => {
   if (!isOpen) return null;
 
   return (
-    <div className="fixed bottom-20 right-8 w-[380px] h-[500px] bg-white rounded-lg shadow-lg overflow-hidden z-50 border border-[#ff7700]">
+    <div 
+      ref={chatContainerRef}
+      className={`
+        fixed z-50 bg-white rounded-lg shadow-lg overflow-hidden border border-[#ff7700]
+        ${isMobile 
+          ? 'bottom-0 left-0 right-0 top-auto w-full h-[70vh] max-h-[600px] rounded-b-none' 
+          : 'bottom-20 right-8 w-[380px] h-[500px] max-w-[95vw]'
+        }
+      `}
+    >
       {/* Header */}
-      <div className="flex justify-between items-center p-2 bg-[#fff5eb]">
+      <div className="flex justify-between items-center p-3 bg-[#fff5eb]">
         <button
           onClick={closeChat}
           className="text-gray-500 hover:text-[#ff7700] transition-colors"
+          aria-label="Close chat"
         >
           <AiOutlineClose size={20} />
         </button>
@@ -412,11 +467,15 @@ const ChatbotWindow: React.FC = () => {
         >
           {mode === "ai" ? (
             <>
-              <HiUserGroup size={18} /> Talk to a Real Agent
+              <HiUserGroup size={18} /> 
+              <span className={isMobile ? "hidden sm:inline" : ""}>Talk to a Real Agent</span>
+              <span className={isMobile ? "sm:hidden" : "hidden"}>Agent</span>
             </>
           ) : (
             <>
-              <BsRobot size={16} /> Back to AI Assistant
+              <BsRobot size={16} /> 
+              <span className={isMobile ? "hidden sm:inline" : ""}>Back to AI Assistant</span>
+              <span className={isMobile ? "sm:hidden" : "hidden"}>AI</span>
             </>
           )}
         </button>
@@ -430,7 +489,7 @@ const ChatbotWindow: React.FC = () => {
       )}
 
       {/* Unified Chat */}
-      <MainContainer className="py-12">
+      <MainContainer className={isMobile ? "h-[calc(100%-80px)]" : "py-12"}>
         <ChatContainer>
           <MessageList
             typingIndicator={
@@ -438,6 +497,7 @@ const ChatbotWindow: React.FC = () => {
                 <TypingIndicator content="Assistant is answering..." />
               ) : null
             }
+            className={isMobile ? "px-2" : ""}
           >
             {messages.map((msg) => (
               <Message
@@ -461,6 +521,7 @@ const ChatbotWindow: React.FC = () => {
             }
             onSend={handleSend}
             disabled={mode === "agent" && !isZohoReady}
+            className={isMobile ? "px-2" : ""}
           />
         </ChatContainer>
       </MainContainer>
