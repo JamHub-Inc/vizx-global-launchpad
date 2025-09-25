@@ -22,6 +22,7 @@ import Logistics from "./pages/Logistics";
 import Retail from "./pages/Retail"
 import Manufuctering from "./pages/Manufuctering";
 import WelfareFund from "./pages/WelfareFund";
+import ScrollToTopButton from "@/components/ScrollToTop";
 import { ChatProvider } from "@/components/ChatContext";
 import ChatButton from "@/components/chatButton";
 import ChatbotWindow from "@/components/chatWindowComponent";
@@ -54,6 +55,7 @@ const App = () => (
               <Route path="manufacturing" element={<Manufuctering />} />
               <Route path="retail" element={<Retail />} />
               <Route path="employee-welfare" element={<WelfareFund />} />
+              
               <Route path="*" element={<NotFound />} />
             </Routes>
             {/* Chat components should be outside <Routes>, but inside <ChatProvider> */}
@@ -61,6 +63,7 @@ const App = () => (
             <ChatbotWindow />
           </ChatProvider>
         </BrowserRouter>
+           <ScrollToTopButton/>
       </TooltipProvider>
     </ThemeProvider>
   </QueryClientProvider>
