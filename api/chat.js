@@ -1,13 +1,11 @@
 export default async function handler(request, response) {
   // Handle CORS
-  response.setHeader('Access-Control-Allow-Credentials', true);
   response.setHeader('Access-Control-Allow-Origin', '*');
-  response.setHeader('Access-Control-Allow-Methods', 'GET,OPTIONS,PATCH,DELETE,POST,PUT');
-  response.setHeader('Access-Control-Allow-Headers', 'X-CSRF-Token, X-Requested-With, Accept, Accept-Version, Content-Length, Content-MD5, Content-Type, Date, X-Api-Version');
+  response.setHeader('Access-Control-Allow-Methods', 'POST, OPTIONS');
+  response.setHeader('Access-Control-Allow-Headers', 'Content-Type');
 
   if (request.method === 'OPTIONS') {
-    response.status(200).end();
-    return;
+    return response.status(200).end();
   }
 
   if (request.method !== 'POST') {
@@ -15,13 +13,22 @@ export default async function handler(request, response) {
   }
 
   try {
+    console.log('=== VERCEL FUNCTION DEBUG ===');
+    console.log('Environment variables check:');
+    console.log('OPENAI_API_KEY exists:', !!process.env.OPENAI_API_KEY);
+    console.log('OPENAI_API_KEY length:', process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.length : 0);
+    console.log('OPENAI_API_KEY starts with:', process.env.OPENAI_API_KEY ? process.env.OPENAI_API_KEY.substring(0, 10) + '...' : 'none');
+    
     const { model, messages } = request.body;
 
-    console.log('Processing OpenAI request...');
-    
     if (!process.env.OPENAI_API_KEY) {
-      throw new Error('OpenAI API key is missing from environment variables');
+      console.error('❌ OPENAI_API_KEY is missing from environment variables');
+      return response.status(500).json({ 
+        error: 'Server configuration error: API key missing' 
+      });
     }
+
+    console.log('Making request to OpenAI API...');
     
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
@@ -37,20 +44,26 @@ export default async function handler(request, response) {
       }),
     });
 
+    console.log('OpenAI response status:', openaiResponse.status);
+
     if (!openaiResponse.ok) {
       const errorText = await openaiResponse.text();
-      console.error('OpenAI API error:', openaiResponse.status, errorText);
+      console.error('❌ OpenAI API error:', openaiResponse.status, errorText);
       return response.status(openaiResponse.status).json({ 
-        error: `OpenAI API error: ${openaiResponse.status}` 
+        error: `OpenAI API error: ${openaiResponse.status}`,
+        details: errorText
       });
     }
 
     const data = await openaiResponse.json();
-    console.log('OpenAI response received successfully');
+    console.log('✅ OpenAI response received successfully');
     
     response.status(200).json(data);
   } catch (error) {
-    console.error('Server error:', error);
-    response.status(500).json({ error: error.message || 'Internal server error' });
+    console.error('❌ Server error:', error);
+    response.status(500).json({ 
+      error: 'Internal server error',
+      message: error.message 
+    });
   }
 }

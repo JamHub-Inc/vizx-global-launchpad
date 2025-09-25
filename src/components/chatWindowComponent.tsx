@@ -333,7 +333,7 @@ const ChatbotWindow: React.FC = () => {
     }
   };
 
- const processMessageToChatGPT = async (chatMessages: ChatMessage[]) => {
+const processMessageToChatGPT = async (chatMessages: ChatMessage[]) => {
   const apiMessages = chatMessages.map((msg) => ({
     role: msg.sender === "ChatGPT" ? "assistant" : "user",
     content: msg.message,
@@ -346,19 +346,11 @@ const ChatbotWindow: React.FC = () => {
 
   try {
     console.log("Environment:", IS_DEVELOPMENT ? "Development" : "Production");
-    console.log("API_KEY available:", !!API_KEY);
     
     let response;
-    let apiType = "";
     
     if (IS_DEVELOPMENT) {
-      // Check if API key is available for development
-      if (!API_KEY) {
-        throw new Error("OpenAI API key is missing. Please check your .env file.");
-      }
-      
-      // Use direct OpenAI API in development
-      apiType = "Direct OpenAI API";
+      // Development: Use direct OpenAI API
       console.log("Using direct OpenAI API (development mode)");
       response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
@@ -369,87 +361,49 @@ const ChatbotWindow: React.FC = () => {
         body: JSON.stringify(requestBody),
       });
     } else {
-      // Production mode - try multiple endpoints with fallbacks
-      const apiEndpoints = [
-        "/api/chat", // Relative path
-        "https://vizx-global-launchpad.vercel.app/api/chat", // Absolute path
-      ];
-
-      let lastError;
+      // Production: Use Vercel API with fallback
+      console.log("Using Vercel API route (production mode)");
       
-      for (const endpoint of apiEndpoints) {
-        try {
-          apiType = `Vercel API (${endpoint})`;
-          console.log(`Trying API endpoint: ${endpoint}`);
-          
-          response = await fetch(endpoint, {
-            method: "POST",
-            headers: {
-              "Content-Type": "application/json",
-            },
-            body: JSON.stringify(requestBody),
-          });
+      // Try absolute URL first
+      const apiUrl = "https://vizx-global-launchpad.vercel.app/api/chat";
+      response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
 
-          console.log(`Endpoint ${endpoint} response status:`, response.status);
-          
-          if (response.ok) {
-            console.log(`✅ Success with endpoint: ${endpoint}`);
-            break;
-          } else {
-            const errorText = await response.text();
-            lastError = new Error(`HTTP ${response.status} from ${endpoint}: ${errorText}`);
-            console.log(`❌ Failed with endpoint ${endpoint}:`, response.status);
-            continue; // Try next endpoint
-          }
-        } catch (endpointError) {
-          console.log(`❌ Error with endpoint ${endpoint}:`, endpointError);
-          lastError = endpointError;
-          continue; // Try next endpoint
-        }
-      }
-
-      // If all API endpoints failed, throw the last error
-      if (!response || !response.ok) {
-        throw lastError || new Error("All API endpoints failed");
+      // If 401, try direct API as fallback (temporary)
+      if (response.status === 401) {
+        console.log("Vercel API returned 401, trying direct API as fallback");
+        response = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${API_KEY}`,
+            "Content-Type": "application/json",
+          },
+          body: JSON.stringify(requestBody),
+        });
       }
     }
 
-    console.log(`Final API type: ${apiType}, Status: ${response.status}`);
+    console.log("Response status:", response.status);
 
     if (!response.ok) {
       const errorText = await response.text();
       console.error(`HTTP error! status: ${response.status}`, errorText);
       
-      let errorMessage = `API Error (${response.status})`;
       if (response.status === 401) {
-        errorMessage = "Authentication error. Please check Vercel environment variables.";
-      } else if (response.status === 404) {
-        errorMessage = "API endpoint not found. The serverless function may not be deployed correctly.";
-      } else if (response.status === 500) {
-        errorMessage = "Server error. Please check Vercel function logs.";
-      } else if (response.status === 429) {
-        errorMessage = "Too many requests. Please wait a moment and try again.";
+        throw new Error("Authentication failed. Please check if the API key is configured correctly on the server.");
       }
-      
-      throw new Error(errorMessage);
+      throw new Error(`API Error: ${response.status}`);
     }
 
     const data = await response.json();
-    console.log("API response received successfully");
     
     if (data.error) {
-      console.error("API Error:", data.error);
-      setMessages((prev) => [
-        ...prev,
-        {
-          message: "Sorry, I'm experiencing technical difficulties. Please try again later.",
-          sender: "system",
-          direction: "incoming",
-          timestamp: Date.now(),
-          id: `msg-${Date.now()}-system`,
-        },
-      ]);
-      return;
+      throw new Error(data.error.message || "API returned an error");
     }
 
     const reply = data.choices[0].message.content;
@@ -464,11 +418,11 @@ const ChatbotWindow: React.FC = () => {
       },
     ]);
   } catch (err: any) {
-    console.error("Network error:", err);
+    console.error("ChatGPT error:", err);
     setMessages((prev) => [
       ...prev,
       {
-        message: err.message || "Sorry, I'm having trouble connecting. Please check your connection and try again.",
+        message: `I apologize, but I'm experiencing technical difficulties. ${err.message}`,
         sender: "system",
         direction: "incoming",
         timestamp: Date.now(),
