@@ -342,9 +342,11 @@ const ChatbotWindow: React.FC = () => {
       console.log("Environment:", IS_DEVELOPMENT ? "Development" : "Production");
       
       let response;
+      let apiType = "";
       
       if (IS_DEVELOPMENT) {
         // Use direct OpenAI API in development
+        apiType = "Direct OpenAI API";
         console.log("Using direct OpenAI API (development mode)");
         response = await fetch("https://api.openai.com/v1/chat/completions", {
           method: "POST",
@@ -355,25 +357,82 @@ const ChatbotWindow: React.FC = () => {
           body: JSON.stringify(requestBody),
         });
       } else {
-        // Use Vercel API route in production
-        console.log("Using Vercel API route (production mode)");
-        response = await fetch("/api/chat", {
-          method: "POST",
-          headers: {
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        });
+        // Try multiple endpoints in production with fallbacks
+        const apiEndpoints = [
+          "/api/chat", // Relative path
+          "https://vizx-global-launchpad.vercel.app/api/chat", // Absolute path
+        ];
+
+        let lastError;
+        
+        for (const endpoint of apiEndpoints) {
+          try {
+            apiType = `Vercel API (${endpoint})`;
+            console.log(`Trying API endpoint: ${endpoint}`);
+            
+            response = await fetch(endpoint, {
+              method: "POST",
+              headers: {
+                "Content-Type": "application/json",
+              },
+              body: JSON.stringify(requestBody),
+            });
+
+            if (response.ok) {
+              console.log(`✅ Success with endpoint: ${endpoint}`);
+              break;
+            } else if (response.status === 404) {
+              console.log(`❌ 404 with endpoint: ${endpoint}`);
+              lastError = new Error(`API route not found (404) at ${endpoint}`);
+              continue; // Try next endpoint
+            } else {
+              lastError = new Error(`HTTP error! status: ${response.status} from ${endpoint}`);
+              continue; // Try next endpoint
+            }
+          } catch (endpointError) {
+            console.log(`❌ Error with endpoint ${endpoint}:`, endpointError);
+            lastError = endpointError;
+            continue; // Try next endpoint
+          }
+        }
+
+        // If all API endpoints failed, try direct OpenAI as last resort
+        if (!response || !response.ok) {
+          console.log("All Vercel API endpoints failed, trying direct OpenAI API as fallback");
+          apiType = "Direct OpenAI API (fallback)";
+          response = await fetch("https://api.openai.com/v1/chat/completions", {
+            method: "POST",
+            headers: {
+              Authorization: `Bearer ${API_KEY}`,
+              "Content-Type": "application/json",
+            },
+            body: JSON.stringify(requestBody),
+          });
+        }
       }
+
+      console.log(`Final API type: ${apiType}, Status: ${response.status}`);
 
       if (!response.ok) {
         const errorText = await response.text();
         console.error(`HTTP error! status: ${response.status}`, errorText);
-        throw new Error(`HTTP error! status: ${response.status}`);
+        
+        let errorMessage = `API Error (${response.status})`;
+        if (response.status === 404) {
+          errorMessage = "Service temporarily unavailable. Please try again later.";
+        } else if (response.status === 401) {
+          errorMessage = "Authentication error. Please contact support.";
+        } else if (response.status === 429) {
+          errorMessage = "Too many requests. Please wait a moment and try again.";
+        } else if (response.status >= 500) {
+          errorMessage = "Server error. Please try again in a few moments.";
+        }
+        
+        throw new Error(errorMessage);
       }
 
       const data = await response.json();
-      console.log("API response received:", data);
+      console.log("API response received successfully");
       
       if (data.error) {
         console.error("API Error:", data.error);
@@ -401,12 +460,12 @@ const ChatbotWindow: React.FC = () => {
           id: `msg-${Date.now()}-ai`,
         },
       ]);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Network error:", err);
       setMessages((prev) => [
         ...prev,
         {
-          message: "Sorry, I'm having trouble connecting. Please check your connection and try again.",
+          message: err.message || "Sorry, I'm having trouble connecting. Please check your connection and try again.",
           sender: "system",
           direction: "incoming",
           timestamp: Date.now(),
