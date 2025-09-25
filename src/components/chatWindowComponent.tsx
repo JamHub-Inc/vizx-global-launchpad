@@ -15,9 +15,15 @@ import { HiUserGroup } from "react-icons/hi";
 import { BsRobot } from "react-icons/bs";
 import { useChat } from "@/components/ChatContext";
 
-// Hybrid approach: Use Vercel API route in production, direct API in development
+// Simple environment variable handling for Vite
 const API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string;
 const IS_DEVELOPMENT = import.meta.env.DEV;
+
+// Debug logging
+console.log('Environment Variables Status:');
+console.log('IS_DEVELOPMENT:', IS_DEVELOPMENT);
+console.log('API_KEY exists:', !!API_KEY);
+console.log('VITE_OPENAI_API_KEY exists:', !!import.meta.env.VITE_OPENAI_API_KEY);
 
 declare global {
   interface Window {
@@ -327,155 +333,152 @@ const ChatbotWindow: React.FC = () => {
     }
   };
 
-  const processMessageToChatGPT = async (chatMessages: ChatMessage[]) => {
-    const apiMessages = chatMessages.map((msg) => ({
-      role: msg.sender === "ChatGPT" ? "assistant" : "user",
-      content: msg.message,
-    }));
+ const processMessageToChatGPT = async (chatMessages: ChatMessage[]) => {
+  const apiMessages = chatMessages.map((msg) => ({
+    role: msg.sender === "ChatGPT" ? "assistant" : "user",
+    content: msg.message,
+  }));
 
-    const requestBody = {
-      model: "gpt-4",
-      messages: [systemMessage, ...apiMessages],
-    };
+  const requestBody = {
+    model: "gpt-4",
+    messages: [systemMessage, ...apiMessages],
+  };
 
-    try {
-      console.log("Environment:", IS_DEVELOPMENT ? "Development" : "Production");
+  try {
+    console.log("Environment:", IS_DEVELOPMENT ? "Development" : "Production");
+    console.log("API_KEY available:", !!API_KEY);
+    
+    let response;
+    let apiType = "";
+    
+    if (IS_DEVELOPMENT) {
+      // Check if API key is available for development
+      if (!API_KEY) {
+        throw new Error("OpenAI API key is missing. Please check your .env file.");
+      }
       
-      let response;
-      let apiType = "";
+      // Use direct OpenAI API in development
+      apiType = "Direct OpenAI API";
+      console.log("Using direct OpenAI API (development mode)");
+      response = await fetch("https://api.openai.com/v1/chat/completions", {
+        method: "POST",
+        headers: {
+          Authorization: `Bearer ${API_KEY}`,
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
+    } else {
+      // Production mode - try multiple endpoints with fallbacks
+      const apiEndpoints = [
+        "/api/chat", // Relative path
+        "https://vizx-global-launchpad.vercel.app/api/chat", // Absolute path
+      ];
+
+      let lastError;
       
-      if (IS_DEVELOPMENT) {
-        // Use direct OpenAI API in development
-        apiType = "Direct OpenAI API";
-        console.log("Using direct OpenAI API (development mode)");
-        response = await fetch("https://api.openai.com/v1/chat/completions", {
-          method: "POST",
-          headers: {
-            Authorization: `Bearer ${API_KEY}`,
-            "Content-Type": "application/json",
-          },
-          body: JSON.stringify(requestBody),
-        });
-      } else {
-        // Try multiple endpoints in production with fallbacks
-        const apiEndpoints = [
-          "/api/chat", // Relative path
-          "https://vizx-global-launchpad.vercel.app/api/chat", // Absolute path
-        ];
-
-        let lastError;
-        
-        for (const endpoint of apiEndpoints) {
-          try {
-            apiType = `Vercel API (${endpoint})`;
-            console.log(`Trying API endpoint: ${endpoint}`);
-            
-            response = await fetch(endpoint, {
-              method: "POST",
-              headers: {
-                "Content-Type": "application/json",
-              },
-              body: JSON.stringify(requestBody),
-            });
-
-            if (response.ok) {
-              console.log(`✅ Success with endpoint: ${endpoint}`);
-              break;
-            } else if (response.status === 404) {
-              console.log(`❌ 404 with endpoint: ${endpoint}`);
-              lastError = new Error(`API route not found (404) at ${endpoint}`);
-              continue; // Try next endpoint
-            } else {
-              lastError = new Error(`HTTP error! status: ${response.status} from ${endpoint}`);
-              continue; // Try next endpoint
-            }
-          } catch (endpointError) {
-            console.log(`❌ Error with endpoint ${endpoint}:`, endpointError);
-            lastError = endpointError;
-            continue; // Try next endpoint
-          }
-        }
-
-        // If all API endpoints failed, try direct OpenAI as last resort
-        if (!response || !response.ok) {
-          console.log("All Vercel API endpoints failed, trying direct OpenAI API as fallback");
-          apiType = "Direct OpenAI API (fallback)";
-          response = await fetch("https://api.openai.com/v1/chat/completions", {
+      for (const endpoint of apiEndpoints) {
+        try {
+          apiType = `Vercel API (${endpoint})`;
+          console.log(`Trying API endpoint: ${endpoint}`);
+          
+          response = await fetch(endpoint, {
             method: "POST",
             headers: {
-              Authorization: `Bearer ${API_KEY}`,
               "Content-Type": "application/json",
             },
             body: JSON.stringify(requestBody),
           });
+
+          console.log(`Endpoint ${endpoint} response status:`, response.status);
+          
+          if (response.ok) {
+            console.log(`✅ Success with endpoint: ${endpoint}`);
+            break;
+          } else {
+            const errorText = await response.text();
+            lastError = new Error(`HTTP ${response.status} from ${endpoint}: ${errorText}`);
+            console.log(`❌ Failed with endpoint ${endpoint}:`, response.status);
+            continue; // Try next endpoint
+          }
+        } catch (endpointError) {
+          console.log(`❌ Error with endpoint ${endpoint}:`, endpointError);
+          lastError = endpointError;
+          continue; // Try next endpoint
         }
       }
 
-      console.log(`Final API type: ${apiType}, Status: ${response.status}`);
-
-      if (!response.ok) {
-        const errorText = await response.text();
-        console.error(`HTTP error! status: ${response.status}`, errorText);
-        
-        let errorMessage = `API Error (${response.status})`;
-        if (response.status === 404) {
-          errorMessage = "Service temporarily unavailable. Please try again later.";
-        } else if (response.status === 401) {
-          errorMessage = "Authentication error. Please contact support.";
-        } else if (response.status === 429) {
-          errorMessage = "Too many requests. Please wait a moment and try again.";
-        } else if (response.status >= 500) {
-          errorMessage = "Server error. Please try again in a few moments.";
-        }
-        
-        throw new Error(errorMessage);
+      // If all API endpoints failed, throw the last error
+      if (!response || !response.ok) {
+        throw lastError || new Error("All API endpoints failed");
       }
+    }
 
-      const data = await response.json();
-      console.log("API response received successfully");
+    console.log(`Final API type: ${apiType}, Status: ${response.status}`);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`HTTP error! status: ${response.status}`, errorText);
       
-      if (data.error) {
-        console.error("API Error:", data.error);
-        setMessages((prev) => [
-          ...prev,
-          {
-            message: "Sorry, I'm experiencing technical difficulties. Please try again later.",
-            sender: "system",
-            direction: "incoming",
-            timestamp: Date.now(),
-            id: `msg-${Date.now()}-system`,
-          },
-        ]);
-        return;
+      let errorMessage = `API Error (${response.status})`;
+      if (response.status === 401) {
+        errorMessage = "Authentication error. Please check Vercel environment variables.";
+      } else if (response.status === 404) {
+        errorMessage = "API endpoint not found. The serverless function may not be deployed correctly.";
+      } else if (response.status === 500) {
+        errorMessage = "Server error. Please check Vercel function logs.";
+      } else if (response.status === 429) {
+        errorMessage = "Too many requests. Please wait a moment and try again.";
       }
+      
+      throw new Error(errorMessage);
+    }
 
-      const reply = data.choices[0].message.content;
+    const data = await response.json();
+    console.log("API response received successfully");
+    
+    if (data.error) {
+      console.error("API Error:", data.error);
       setMessages((prev) => [
         ...prev,
         {
-          message: reply,
-          sender: "ChatGPT",
-          direction: "incoming",
-          timestamp: Date.now(),
-          id: `msg-${Date.now()}-ai`,
-        },
-      ]);
-    } catch (err: any) {
-      console.error("Network error:", err);
-      setMessages((prev) => [
-        ...prev,
-        {
-          message: err.message || "Sorry, I'm having trouble connecting. Please check your connection and try again.",
+          message: "Sorry, I'm experiencing technical difficulties. Please try again later.",
           sender: "system",
           direction: "incoming",
           timestamp: Date.now(),
           id: `msg-${Date.now()}-system`,
         },
       ]);
-    } finally {
-      setIsTyping(false);
+      return;
     }
-  };
+
+    const reply = data.choices[0].message.content;
+    setMessages((prev) => [
+      ...prev,
+      {
+        message: reply,
+        sender: "ChatGPT",
+        direction: "incoming",
+        timestamp: Date.now(),
+        id: `msg-${Date.now()}-ai`,
+      },
+    ]);
+  } catch (err: any) {
+    console.error("Network error:", err);
+    setMessages((prev) => [
+      ...prev,
+      {
+        message: err.message || "Sorry, I'm having trouble connecting. Please check your connection and try again.",
+        sender: "system",
+        direction: "incoming",
+        timestamp: Date.now(),
+        id: `msg-${Date.now()}-system`,
+      },
+    ]);
+  } finally {
+    setIsTyping(false);
+  }
+};
 
   const handleModeSwitch = () => {
     if (mode === "ai") {

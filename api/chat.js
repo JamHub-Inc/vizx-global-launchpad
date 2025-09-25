@@ -19,6 +19,10 @@ export default async function handler(request, response) {
 
     console.log('Processing OpenAI request...');
     
+    if (!process.env.OPENAI_API_KEY) {
+      throw new Error('OpenAI API key is missing from environment variables');
+    }
+    
     const openaiResponse = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -47,6 +51,6 @@ export default async function handler(request, response) {
     response.status(200).json(data);
   } catch (error) {
     console.error('Server error:', error);
-    response.status(500).json({ error: 'Internal server error' });
+    response.status(500).json({ error: error.message || 'Internal server error' });
   }
 }
