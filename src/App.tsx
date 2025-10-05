@@ -55,7 +55,6 @@ const App = () => (
               <Route path="/manufacturing" element={<Manufuctering />} />
               <Route path="/retail" element={<Retail />} />
               <Route path="/employee-welfare" element={<WelfareFund />} />
-              
               <Route path="*" element={<NotFound />} />
             </Routes>
             {/* Chat components should be outside <Routes>, but inside <ChatProvider> */}

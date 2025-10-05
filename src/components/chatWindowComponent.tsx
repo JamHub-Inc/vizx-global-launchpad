@@ -15,7 +15,15 @@ import { HiUserGroup } from "react-icons/hi";
 import { BsRobot } from "react-icons/bs";
 import { useChat } from "@/components/ChatContext";
 
+// Simple environment variable handling for Vite
 const API_KEY = import.meta.env.VITE_OPENAI_API_KEY as string;
+const IS_DEVELOPMENT = import.meta.env.DEV;
+
+// Debug logging
+console.log('Environment Variables Status:');
+console.log('IS_DEVELOPMENT:', IS_DEVELOPMENT);
+console.log('API_KEY exists:', !!API_KEY);
+console.log('VITE_OPENAI_API_KEY exists:', !!import.meta.env.VITE_OPENAI_API_KEY);
 
 declare global {
   interface Window {
@@ -34,7 +42,7 @@ type ChatMessage = {
 
 const systemMessage = {
   role: "system",
-content: `
+  content: `
   You are Vizx Global's AI Assistant.
   - Always answer as a representative of Vizx Global Solutions.
   - Vizx Global is a premier BPO (Business Process Outsourcing) and RPO (Recruitment Process Outsourcing) company.
@@ -69,14 +77,14 @@ content: `
   - Vizx Global is NOT affiliated with VXI Global Solutions (vxi.com).
   - VXI was founded in 1998, acquired by Bain Capital in 2022, with a separate leadership team.
   - Negative VXI reviews and financials do not apply to Vizx Global.
-  - Vizx Global’s reputation is positive, with strong client testimonials highlighting efficiency and cost savings.
+  - Vizx Global's reputation is positive, with strong client testimonials highlighting efficiency and cost savings.
   - Differentiation: African cost efficiency + Western service quality.
   - Partnerships with U.S. firms strengthen credibility and trust.
   - Vizx Global uses AI, automation, and cloud tools for digital transformation.
   - Clients span industries: technology, finance, healthcare, and real estate.
   - Vision: transform outsourcing through innovation, efficiency, and global talent.
   - Mission: deliver scalable, affordable, and high-quality outsourcing solutions.
-  - Value proposition: mobilizing Africa’s educated workforce to serve global businesses.
+  - Value proposition: mobilizing Africa's educated workforce to serve global businesses.
   - Service delivery blends human expertise with digital automation for maximum impact.
   - Competitive edge: agile scaling, owner-driven model, and direct leadership oversight.
   - Training and development programs prepare Kenyan graduates for global careers.
@@ -130,7 +138,6 @@ const ChatbotWindow: React.FC = () => {
       const zoho = window.$zoho || window.ZOHO;
       
       if (zoho && zoho.salesiq) {
-        // Check if any chat-related methods exist
         const hasChatMethods = 
           (zoho.salesiq.visitor && 
            (zoho.salesiq.visitor.chat || 
@@ -150,13 +157,10 @@ const ChatbotWindow: React.FC = () => {
       return false;
     };
 
-    // Initial check
     if (checkZohoReady()) return;
 
-    // Set up interval to check for Zoho
     zohoCheckInterval.current = setInterval(checkZohoReady, 1000);
 
-    // Cleanup
     return () => {
       if (zohoCheckInterval.current) {
         clearInterval(zohoCheckInterval.current);
@@ -171,7 +175,6 @@ const ChatbotWindow: React.FC = () => {
       setIsZohoReady(true);
     };
 
-    // Listen for Zoho's built-in ready event
     if (window.$zoho && window.$zoho.salesiq && window.$zoho.salesiq.ready) {
       const originalReady = window.$zoho.salesiq.ready;
       window.$zoho.salesiq.ready = function() {
@@ -182,7 +185,6 @@ const ChatbotWindow: React.FC = () => {
       };
     }
 
-    // Also check if Zoho is already ready
     if (window.$zoho && window.$zoho.salesiq && window.$zoho.salesiq.visitor) {
       handleZohoReady();
     }
@@ -246,24 +248,19 @@ const ChatbotWindow: React.FC = () => {
       const zoho = window.$zoho || window.ZOHO;
       let messageSent = false;
 
-      // Try the correct Zoho API methods based on debug output
       if (zoho && zoho.salesiq && zoho.salesiq.visitor) {
-        // Method 1: chatmessage (most likely for sending messages)
         if (zoho.salesiq.visitor.chatmessage && typeof zoho.salesiq.visitor.chatmessage === 'function') {
           zoho.salesiq.visitor.chatmessage(text);
           messageSent = true;
         }
-        // Method 2: offlineMessage (for when agents are offline)
         else if (zoho.salesiq.visitor.offlineMessage && typeof zoho.salesiq.visitor.offlineMessage === 'function') {
           zoho.salesiq.visitor.offlineMessage(text);
           messageSent = true;
         }
-        // Method 3: Try to start a chat and then send message
         else if (zoho.salesiq.visitor.chat && typeof zoho.salesiq.visitor.chat === 'function') {
           zoho.salesiq.visitor.chat(text);
           messageSent = true;
         }
-        // Method 4: Use the chat object's methods
         else if (zoho.salesiq.chat && zoho.salesiq.chat.start && typeof zoho.salesiq.chat.start === 'function') {
           zoho.salesiq.chat.start();
           if (zoho.salesiq.visitor.chatmessage && typeof zoho.salesiq.visitor.chatmessage === 'function') {
@@ -336,19 +333,26 @@ const ChatbotWindow: React.FC = () => {
     }
   };
 
-  const processMessageToChatGPT = async (chatMessages: ChatMessage[]) => {
-    const apiMessages = chatMessages.map((msg) => ({
-      role: msg.sender === "ChatGPT" ? "assistant" : "user",
-      content: msg.message,
-    }));
+const processMessageToChatGPT = async (chatMessages: ChatMessage[]) => {
+  const apiMessages = chatMessages.map((msg) => ({
+    role: msg.sender === "ChatGPT" ? "assistant" : "user",
+    content: msg.message,
+  }));
 
-    const requestBody = {
-      model: "gpt-4",
-      messages: [systemMessage, ...apiMessages],
-    };
+  const requestBody = {
+    model: "gpt-4",
+    messages: [systemMessage, ...apiMessages],
+  };
 
-    try {
-      const response = await fetch("https://api.openai.com/v1/chat/completions", {
+  try {
+    console.log("Environment:", IS_DEVELOPMENT ? "Development" : "Production");
+    
+    let response;
+    
+    if (IS_DEVELOPMENT) {
+      // Development: Use direct OpenAI API
+      console.log("Using direct OpenAI API (development mode)");
+      response = await fetch("https://api.openai.com/v1/chat/completions", {
         method: "POST",
         headers: {
           Authorization: `Bearer ${API_KEY}`,
@@ -356,54 +360,79 @@ const ChatbotWindow: React.FC = () => {
         },
         body: JSON.stringify(requestBody),
       });
+    } else {
+      // Production: Use Vercel API with fallback
+      console.log("Using Vercel API route (production mode)");
+      
+      // Try absolute URL first
+      const apiUrl = "https://vizx-global-launchpad.vercel.app/api/chat";
+      response = await fetch(apiUrl, {
+        method: "POST",
+        headers: {
+          "Content-Type": "application/json",
+        },
+        body: JSON.stringify(requestBody),
+      });
 
-      if (!response.ok) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-
-      const data = await response.json();
-      if (data.error) {
-        console.error("OpenAI API Error:", data.error.message);
-        setMessages((prev) => [
-          ...prev,
-          {
-            message: "Sorry, I'm experiencing technical difficulties. Please try again later.",
-            sender: "system",
-            direction: "incoming",
-            timestamp: Date.now(),
-            id: `msg-${Date.now()}-system`,
+      // If 401, try direct API as fallback (temporary)
+      if (response.status === 401) {
+        console.log("Vercel API returned 401, trying direct API as fallback");
+        response = await fetch("https://api.openai.com/v1/chat/completions", {
+          method: "POST",
+          headers: {
+            Authorization: `Bearer ${API_KEY}`,
+            "Content-Type": "application/json",
           },
-        ]);
-        return;
+          body: JSON.stringify(requestBody),
+        });
       }
-
-      const reply = data.choices[0].message.content;
-      setMessages((prev) => [
-        ...prev,
-        {
-          message: reply,
-          sender: "ChatGPT",
-          direction: "incoming",
-          timestamp: Date.now(),
-          id: `msg-${Date.now()}-ai`,
-        },
-      ]);
-    } catch (err) {
-      console.error("Network error:", err);
-      setMessages((prev) => [
-        ...prev,
-        {
-          message: "Sorry, I'm having trouble connecting. Please try again.",
-          sender: "system",
-          direction: "incoming",
-          timestamp: Date.now(),
-          id: `msg-${Date.now()}-system`,
-        },
-      ]);
-    } finally {
-      setIsTyping(false);
     }
-  };
+
+    console.log("Response status:", response.status);
+
+    if (!response.ok) {
+      const errorText = await response.text();
+      console.error(`HTTP error! status: ${response.status}`, errorText);
+      
+      if (response.status === 401) {
+        throw new Error("Authentication failed. Please check if the API key is configured correctly on the server.");
+      }
+      throw new Error(`API Error: ${response.status}`);
+    }
+
+    const data = await response.json();
+    
+    if (data.error) {
+      throw new Error(data.error.message || "API returned an error");
+    }
+
+    const reply = data.choices[0].message.content;
+    setMessages((prev) => [
+      ...prev,
+      {
+        message: reply,
+        sender: "ChatGPT",
+        direction: "incoming",
+        timestamp: Date.now(),
+        id: `msg-${Date.now()}-ai`,
+      },
+    ]);
+  } catch (err: any) {
+    console.error("ChatGPT error:", err);
+    setMessages((prev) => [
+      ...prev,
+      {
+        message: `I apologize, but I'm experiencing technical difficulties. ${err.message}`,
+        sender: "system",
+        direction: "incoming",
+        timestamp: Date.now(),
+        id: `msg-${Date.now()}-system`,
+      },
+    ]);
+  } finally {
+    setIsTyping(false);
+  }
+};
 
   const handleModeSwitch = () => {
     if (mode === "ai") {
@@ -475,7 +504,7 @@ const ChatbotWindow: React.FC = () => {
             <>
               <BsRobot size={16} /> 
               <span className={isMobile ? "hidden sm:inline" : ""}>Back to AI Assistant</span>
-              <span className={isMobile ? "sm:hidden" : "hidden"}>Vizx AI <Assi></Assi>stant</span>
+              <span className={isMobile ? "sm:hidden" : "hidden"}>Vizx AI Assistant</span>
             </>
           )}
         </button>

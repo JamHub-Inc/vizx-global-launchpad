@@ -11,37 +11,37 @@ const Navigation = () => {
   const navItems = [
     { href: "/", label: "Home" },
     { 
-      href: "/", 
+      href: "#solutions", 
       label: "Solutions", 
       subMenu: [
         { href: "rp", label: "Recruitment Process" },
         { href: "real-estate", label: "Real Estate Solutions" },
-        { href: "#back-office", label: "Back Office Solutions" },
-        { href: "#cx", label: "CX Solutions" },
-        { href: "#merchant", label: "Merchant Solutions" }
+        { href: "back-office", label: "Back Office Solutions" },
+        { href: "cx", label: "CX Solutions" },
+        { href: "merchant", label: "Merchant Solutions" }
       ]
     },
     { 
       href: "#industries", 
       label: "Industries", 
       subMenu: [
-        { href: "#healthcare", label: "Healthcare" },
-        { href: "#technology", label: "Technology" },
-        { href: "#finance", label: "Finance" },
-        { href: "#real-estate-industry", label: "Real Estate" },
-        { href: "#logistics", label: "Logistics & Supply Chain" },
-        { href: "#travel", label: "Travel" },
-        { href: "#manufacturing", label: "Manufacturing" },
-        { href: "#retail", label: "Retail & E-commerce" }
+        { href: "healthcare", label: "Healthcare" },
+        { href: "technology", label: "Technology" },
+        { href: "finance", label: "Finance" },
+        { href: "real-estate-industry", label: "Real Estate" },
+        { href: "logistics", label: "Logistics & Supply Chain" },
+        { href: "travel", label: "Travel" },
+        { href: "manufacturing", label: "Manufacturing" },
+        { href: "retail", label: "Retail & E-commerce" }
       ]
     },
-    { href: "#vizx-hi-ai", label: "Vizx HI + AI" },
-    { href: "#why-kenya", label: "Why Kenya" },
+    { href: "vizx-hi-ai", label: "Vizx HI + AI" },
+    { href: "why-kenya", label: "Why Kenya" },
     { 
       href: "#about-us", 
       label: "About Us", 
       subMenu: [
-        { href: "#employee-welfare", label: "Employee Welfare" },
+        { href: "employee-welfare", label: "Employee Welfare" },
         { href: "#blogs", label: "Blogs" },
         { href: "#contact", label: "Contact Us" }
       ]
